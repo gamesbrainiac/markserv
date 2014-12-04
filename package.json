@@ -1,6 +1,6 @@
 {
   "name": "markserv",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "MARKSERV is designed to replace a MAMP + Marked2 workflow. MARKSERV is a real-time HTTP server that automatically serves markdown files in HTML using Github flavor CSS and syntax highlighting. MERKSERV watches for file updates and autoamtically reloads the markdown page using websockets. It was built for working on projects that contain a combination of web content and Markdown, where the markdown gets reloaded on the fly as the file is saved in your text editor. But it also serves regular HTTP content, replacing the need for a bulky web server setup.",
   "main": "index.js",
   "author": "Alistair MacDonald <al@pwn.io>",
@@ -15,6 +15,7 @@
     "connect": "^3.3.3",
     "less": "^2.1.1",
     "marked": "^0.3.2",
-    "send": "^0.10.1"
+    "send": "^0.10.1",
+    "socket.io": "^1.2.1"
   }
 }
