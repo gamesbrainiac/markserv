@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var Promise = require('bluebird')
 	, connect = require('connect')
 	, http = require('http')
@@ -5,10 +7,21 @@ var Promise = require('bluebird')
 	, less = require('less')
 	, fs = require('fs')
 	, send = require('send')
+	, program = require('commander')
 	;
 
 
-	var dir = '../htdocs'
+
+
+program
+  .version('0.0.4')
+  .option('-h, --home [type]', 'Serve from directory [home]', './')
+  .option('-p, --port [type]', 'Serve on port [port]', '8080')
+  .parse(process.argv);
+	;
+
+
+	var dir = program.home
 		, scriptPath = 'script/script.js'
 		// , cssPath = 'style.less'
 		, cssPath = 'less/github.less'
@@ -16,8 +29,10 @@ var Promise = require('bluebird')
 
 	var app = connect().use('/', onRequest);
 	
-	var server = http.createServer(app).listen(8080)
-		;
+	var server = http.createServer(app).listen(program.port);
+
+	console.log('MarkServ: serving content from "'+program.home+'" on port: '+program.port);
+
 
 
 	var io = require('socket.io')(server);
@@ -87,7 +102,7 @@ var Promise = require('bluebird')
 
 
 	function onRequest(req, res, next){
-  	console.log(dir+req.originalUrl);
+  		console.log('Request: '+ dir+req.originalUrl);
 
 	  var path = dir+req.originalUrl.split('?')[0]
 	  	, end = path.substr(path.length-3).toLowerCase()
@@ -119,10 +134,15 @@ var Promise = require('bluebird')
   	});
 	}
 
-// Watch for style changes
-fs.watch('./less', function (curr, prev) {
-  io.sockets.emit('refresh', + new Date());
+// Watch for style changes if running from package dir
+fs.exists('./less', function(exists) {
+    if (exists) {
+		fs.watch('./less', function (curr, prev) {
+		  io.sockets.emit('refresh', + new Date());
+		});
+    }
 });
+
 
 
 
