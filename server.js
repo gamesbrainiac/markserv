@@ -7,31 +7,29 @@ var Promise = require('bluebird')
 	, less = require('less')
 	, fs = require('fs')
 	, send = require('send')
-	, program = require('commander')
+	, flags = require('commander')
 	;
 
 
 
 
-program
+flags
   .version('0.0.4')
   .option('-h, --home [type]', 'Serve from directory [home]', './')
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
   .parse(process.argv);
 	;
 
-
-	var dir = program.home
-		, scriptPath = 'script/script.js'
-		// , cssPath = 'style.less'
-		, cssPath = 'less/github.less'
+	var dir = flags.home
+		, scriptPath = __dirname+'/script/script.js'
+		, cssPath = __dirname+'/less/github.less'
 		;
 
 	var app = connect().use('/', onRequest);
 	
-	var server = http.createServer(app).listen(program.port);
+	var server = http.createServer(app).listen(flags.port);
 
-	console.log('MarkServ: serving content from "'+program.home+'" on port: '+program.port);
+	console.log('MarkServ: serving content from "'+flags.home+'" on port: '+flags.port);
 
 
 
