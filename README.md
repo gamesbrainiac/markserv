@@ -58,7 +58,7 @@ Point your browser to README.md
 
 Edit your markdown file, and you should now see the page reloading as you save your Markdown file. It should save your scroll position, which helps when editing extemely large documents.
 
-![Live editing example](http://i.imgur.com/duvFBOF.gifv)
+![Live editing example](http://i.imgur.com/duvFBOF.gif)
 
 
 ###Linking to an external Markdown file
