@@ -8,13 +8,12 @@ var Promise = require('bluebird')
 	, fs = require('fs')
 	, send = require('send')
 	, flags = require('commander')
+	, jsdom = require('jsdom')
 	;
 
 
-
-
 flags
-  .version('0.0.4')
+  .version('0.0.5')
   .option('-h, --home [type]', 'Serve from directory [home]', './')
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
   .parse(process.argv);
@@ -43,26 +42,72 @@ flags
 			});
 		});
 	}
+	
+	// Converts github style wiki markdown links to .md links
+  function linkify(body){
+		return new Promise(function (resolve, reject) {	
+			jsdom.env(body, function (err, window) {
+				if (err) return reject(err);
+
+			  var links = window.document.getElementsByTagName('a')
+			  	, i=0
+			  	, l=links.length
+			  	, href
+			  	, link
+			  	, markdownFile
+          , mdFileExists
+          , relativeURL
+			  	;
+
+			  for (; i< l; i++) {
+			  	link = links[i];
+			  	href = link.href;
+			  	isFileHref = href.substr(0,8) ==='file:///';
+
+          markdownFile = href.replace('file://'+__dirname, flags.home)+'.md';
+          mdFileExists = fs.existsSync(markdownFile);
+
+          if (isFileHref && mdFileExists) {
+			  	  relativeURL = href.replace('file://'+__dirname, '')+'.md';
+            link.href=relativeURL;
+			  		// console.log(relativeUrl);
+			  	}
+			  }
+
+			  var html = window.document.getElementsByTagName('body')[0].innerHTML;
+
+			  resolve(html);
+			});
+		});
+	}
+
 	function buildHTMLFromMarkDown(markdownPath){
 		return new Promise(function (resolve, reject) {
 			var css, body;
 
-			getFile(cssPath).then(less.render).then(function(data){
+			getFile(cssPath)
+			.then(less.render)
+			.then(function(data){
+				
 				css = data.css;
-			
 				var filePath = markdownPath.split('?')[0];
 				getFile(filePath).then(function(data){
+				return markdownToHTML(data);
 
-					return markdownToHTML(data);
-				}).then(function(data){
+			})
+			.then(linkify)
+			.then(function(data){
+				
 					body = data;
-
+		//jsdom
+					//
+					
+					
 					getFile(scriptPath).then(function(script){
 
 						var dirs = markdownPath.split('/');
 						title = dirs[dirs.length-1].split('.md')[0];
 						// console.log(title);
-
 
 						var html = '<!DOCTYPE html>' +
 							'<head>' +

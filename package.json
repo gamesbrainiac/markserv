@@ -1,7 +1,7 @@
 {
   "name": "markserv",
-  "version": "0.0.4",
-  "description": "MARKSERV is designed to replace a MAMP + Marked2 workflow. MARKSERV is a real-time HTTP server that automatically serves markdown files in HTML using Github flavor CSS and syntax highlighting. MERKSERV watches for file updates and autoamtically reloads the markdown page using websockets. It was built for working on projects that contain a combination of web content and Markdown, where the markdown gets reloaded on the fly as the file is saved in your text editor. But it also serves regular HTTP content, replacing the need for a bulky web server setup.",
+  "version": "0.0.5",
+  "description": "markserv lets you edit markdown documents and view the changes in your web browser, realtime! markserv saves your scroll position in the browser as you edit :)",
   "bin": {
     "markserv": "server.js"
   },
@@ -16,6 +16,7 @@
     "bluebird": "^2.3.11",
     "commander": "^2.5.1",
     "connect": "^3.3.3",
+    "jsdom": "^2.0.0",
     "less": "^2.1.1",
     "marked": "^0.3.2",
     "send": "^0.10.1",
