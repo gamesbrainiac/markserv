@@ -1,29 +1,37 @@
-#MARKSERV
+#markserv
 
-MARKSERV is designed to replace a MAMP + Marked2 workflow. MARKSERV is a real-time HTTP server that automatically serves markdown files in HTML with Github flavor CSS and syntax highlighting. MERKSERV watches for file updates to the markdown file, and to the LESS CSS directory, and autoamatically reloads the Markdown page via websockets. 
+markserv allows you to edit markdown documents and view the realtime changes in your web browser.
 
-MARKSERV was built for working on projects that contain a combination of web content and Markdown, where the markdown gets reloaded on the fly as the file is saved in your text editor. But it also serves regular HTTP content, replacing the need for a more bulky web server setup using MAMP, etc.
+markserv is designed to replace a MAMP + Marked2 workflow.
 
-##Warning
+markserv is a real-time Markdown server that automatically serves markdown files in HTML with Github flavor CSS and syntax highlighting.
 
-This code is highly experimental.
+markserv follows links to other external files automatially.
 
-##Instructions
+markserv watches for file updates to the markdown file, and to the CSS directory, and autoamatically reloads the Markdown page via websockets. markserv remembers the scroll position you were at in the web browser, and reloads the page with the same scroll position when you make changes.
+
+markserv was built for working on projects that contain a combination of web content and Markdown, where the markdown gets reloaded on the fly as the file is saved in your text editor. But it also serves regular HTTP content, replacing the need for a more bulky web server setup using MAMP, etc.
 
 
-Checkout the repo.
+##Install
+
+Install the markserv server via npm.
 
 ```bash
-    checkout git@github.com:F1LT3R/markserv.git
-    cd markserv
+    npm install markserv
 ```
 
+##Usage
 
-Set the path to your htdocs directory in _server.js_.
+Change to the directory of your CLI.
 
-```javascript
-var dir = '../htdocs'
-```
+    cd path/to/serve/from
+
+Begin serving markdown as HTML on port 8080
+
+    markserv ./
+
+
 
 Install the nessesary packages that markserv needs.
 
