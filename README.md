@@ -37,7 +37,7 @@ I put some _Node.js_ on it :)
 Install the markserv server via npm.
 
 ```shell
-npm install markserv
+npm install markserv -g
 ```
 
 ##Usage
