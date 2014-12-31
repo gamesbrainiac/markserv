@@ -9,11 +9,13 @@ var Promise = require('bluebird')
 	, send = require('send')
 	, flags = require('commander')
 	, jsdom = require('jsdom')
+	, ansi = require('ansi')
+  , cursor = ansi(process.stdout)
 	;
 
 
 flags
-  .version('0.0.5')
+  .version('0.0.7')
   .option('-h, --home [type]', 'Serve from directory [home]', './')
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
   .parse(process.argv);
@@ -28,7 +30,46 @@ flags
 	
 	var server = http.createServer(app).listen(flags.port);
 
-	console.log('MarkServ: serving content from "'+flags.home+'" on port: '+flags.port);
+	function msg(type){
+		return cursor
+			.bg.rgb(128, 255, 0)
+			.fg.rgb(0,0,0)
+			.write(' markserv ')
+			.reset()
+			.fg.rgb(200,200,200)
+			.write(' '+type+': ')
+			.reset()
+			;
+	}
+
+
+	
+	var startMsg = 'serving content from "'+flags.home+'" on port: '+flags.port;
+	msg('start')
+		.write('serving content from ')
+		// .fg.rgb(0,128,255)
+		.fg.rgb(255,255,255)
+		.write(flags.home)
+		.reset()
+		.write(' on port: ')
+		// .fg.rgb(0,128,255)
+		.fg.rgb(255,255,255)
+		.write(flags.port)
+		.reset()
+		.write('\n')
+		;
+
+	var address = server.address();
+
+
+	msg('address')
+		.underline()
+		// .fg.rgb(128,255,0)
+		.fg.rgb(255,255,255)
+		.write('http://'+address.address+':'+address.port)
+		.reset()
+		.write('\n')
+		;
 
 
 
@@ -144,17 +185,43 @@ flags
 	}
 
 
-	function onRequest(req, res, next){
-  		console.log('Request: '+ dir+req.originalUrl);
+	function onRequest(req, res, next){		
+		msg('request')
+		.write(dir+req.originalUrl)
+		.reset()
+		.write('\n')
+		;
 
 	  var path = dir+req.originalUrl.split('?')[0]
 	  	, end = path.substr(path.length-3).toLowerCase()
 	  	, isMarkdown = end === '.md'.toLowerCase()
+	  	, isDir = fs.statSync(path).isDirectory()
 	  	;
   	
 	  if (isMarkdown) {
 	  	markItDown(path, res);
+	  } else if (isDir) {
+	  	var urls = fs.readdirSync(path);
+	  	var html = '';
+	  	
+	  	urls.forEach(function(subPath){
+	  		var dir = fs.statSync(path+subPath).isDirectory();
+	  		var href;
+	  		if (dir){
+	  			href=subPath+'/';
+	  		}else{
+	  			href=subPath;
+	  		}
+	  		html+='<a href="'+href+'">'+href+'</a> <br> \n';
+	  	})
+
+	  	msg('index').write(path).reset().write('\n');
+	  	res.writeHead(200, {'Content-Type': 'text/html'});
+	  	res.write(html);
+	  	res.end();
+
 	  } else {
+    	msg('serve').write(path).reset().write('\n');
     	send(req, path, {root:dir}).pipe(res);
 	  }
 	}

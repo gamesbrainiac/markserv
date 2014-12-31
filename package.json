@@ -1,6 +1,6 @@
 {
   "name": "markserv",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "markserv lets you edit markdown documents and view the changes in your web browser, realtime! markserv saves your scroll position in the browser as you edit :)",
   "bin": {
     "markserv": "server.js"
@@ -13,6 +13,7 @@
     "url": "http://github.com/f1lt3r/markserv.git"
   },
   "dependencies": {
+    "ansi": "^0.3.0",
     "bluebird": "^2.3.11",
     "commander": "^2.5.1",
     "connect": "^3.3.3",

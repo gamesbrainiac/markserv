@@ -6,7 +6,7 @@ markserv lets you edit markdown documents and view the changes in your web brows
 
 ##Why is it?
 
-markserv is designed to replace a MAMP + Marked2 workflow. 
+markserv is designed to replace a Apache + Marked2 workflow. 
 
 I purchased [Marked2](http://marked2app.com/) after seeing a colleage use it to edit markdown content. It looked awesome, but it felt clunky. And it didn't integrate with my almost constant CLI usage. While I found Marked2 to have a very well-rounded feature set, it was simply too slow, and too memory intensive.
 
@@ -18,12 +18,12 @@ I put some _Node.js_ on it :)
 
 ##Features
 
- - An HTTP server that Renders markdown files in HTML
- - GitHub flavor CSS to your markdown files on the fly
- - GitHub style syntax highlighting 
- - Follows links to markdown files
- - Rendered page updates every time the markdown file is changed
- - Scroll position is saved so you don't loose your position while you edit
+ - Basic HTTP server that indexes directories
+ - HTTP server renders Markdown files as HTML
+ - Markdown rendered with GitHub flavor CSS
+ - Markdown rendered with GitHub style syntax highlighting
+ - Changes to Markdown update in your browser whenever you save your Markdown file
+ - Links to extermal Markdown files re-written and followed by the server
 
 
 ##Pre-Requisites
