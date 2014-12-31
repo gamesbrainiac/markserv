@@ -25,7 +25,6 @@ I put some _Node.js_ on it :)
  - Changes to Markdown update in your browser whenever you save your Markdown file
  - Links to extermal Markdown files re-written and followed by the server
 
-
 ##Pre-Requisites
 
  - Node.js & NPM
@@ -46,9 +45,9 @@ Change to the directory of your CLI
 
     cd path/to/serve/from
 
-Start the HTTP markdown server on port 8080
+Start the HTTP markdown server in the current directory on port 8080
 
-    markserv ./
+    markserv
 
 Point your browser to README.md
 

@@ -199,6 +199,7 @@ flags
 	  	;
   	
 	  if (isMarkdown) {
+	  	msg('md-to-html').write(path).reset().write('\n');
 	  	markItDown(path, res);
 	  } else if (isDir) {
 	  	var urls = fs.readdirSync(path);
@@ -221,7 +222,7 @@ flags
 	  	res.end();
 
 	  } else {
-    	msg('serve').write(path).reset().write('\n');
+    	msg('serve-file').write(path).reset().write('\n');
     	send(req, path, {root:dir}).pipe(res);
 	  }
 	}
@@ -235,12 +236,12 @@ flags
 			res.end(html);
 
 			fs.watch(path, function () {
-				console.log(arguments);
+				msg('update').write('Can\'t build Markdown to HTML: ',err).reset().write('\n');
 			  io.sockets.emit('refresh', + new Date());
 			});
 
   	}).catch(function(err){
-  			console.log('Error building HTML: ', err);
+  			msg('error').write('Can\'t build HTML: ',err).reset().write('\n');
   	});
 	}
 
