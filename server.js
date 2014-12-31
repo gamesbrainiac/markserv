@@ -122,6 +122,13 @@ flags
 		});
 	}
 
+	var customCSSforMarkdown;
+	getFile(cssPath)
+		.then(less.render)
+		.then(function(data){
+			customCSSforMarkdown = data.css;
+		});
+
 	function buildHTMLFromMarkDown(markdownPath){
 		return new Promise(function (resolve, reject) {
 			var css, body;
@@ -131,18 +138,16 @@ flags
 			.then(function(data){
 				
 				css = data.css;
+				customCSSforMarkdown = data.css;
+
 				var filePath = markdownPath.split('?')[0];
 				getFile(filePath).then(function(data){
-				return markdownToHTML(data);
-
-			})
-			.then(linkify)
-			.then(function(data){
+					return markdownToHTML(data);
+				})
+				.then(linkify)
+				.then(function(data){
 				
 					body = data;
-		//jsdom
-					//
-					
 					
 					getFile(scriptPath).then(function(script){
 
@@ -158,6 +163,7 @@ flags
 							'<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>'+
 						  '<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>'+
 						  '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">' +
+						  '<link rel="shortcut icon" type="image/x-icon" href="https://cdn0.iconfinder.com/data/icons/octicons/1024/markdown-128.png" />' +
 							'<style>'+css+'</style>' +
 							'<script src="/socket.io/socket.io.js"></script>' +
 							'</head>' +
@@ -198,29 +204,75 @@ flags
 	  	, isDir = fs.statSync(path).isDirectory()
 	  	;
   	
+	  // Markdown Files
 	  if (isMarkdown) {
 	  	msg('md-to-html').write(path).reset().write('\n');
 	  	markItDown(path, res);
+	  
+
+	  // Directory Indexes
 	  } else if (isDir) {
 	  	var urls = fs.readdirSync(path);
-	  	var html = '';
+	  	
+	  	var list = '<ul>\n';
 	  	
 	  	urls.forEach(function(subPath){
 	  		var dir = fs.statSync(path+subPath).isDirectory();
 	  		var href;
 	  		if (dir){
 	  			href=subPath+'/';
+	  			list+='\t<li class="dir"><a href="'+href+'">'+href+'</a></li> \n';
 	  		}else{
 	  			href=subPath;
+	  			 
+	  			 // var  subPath = dir+req.originalUrl.split('?')[0]
+	  				// , end = path.substr(path.length-3).toLowerCase()
+	  				// , isMarkdown = end === '.md'.toLowerCase();
+
+
+	  				// console.log(subPath.split('.md'))
+
+	  			// if(subPath.split('.md')[1]==='.md'){
+	  				// list+='\t<li class="md"><a href="'+href+'">'+href+'</a></li> \n';
+	  			// }else{
+	  				list+='\t<li class="file"><a href="'+href+'">'+href+'</a></li> \n';
+	  			// }
+
 	  		}
-	  		html+='<a href="'+href+'">'+href+'</a> <br> \n';
 	  	})
+	  	list += '</ul>\n';
+
+	  
+	  	var html = '<!DOCTYPE html>' +
+				'<head>' +
+				'<title>'+path+'</title>' +
+				'<meta charset="utf-8">' +
+				// '<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>'+
+				'<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>'+
+			  '<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>'+
+			  '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">' +
+			  '<link rel="shortcut icon" type="image/x-icon" href="https://cdn0.iconfinder.com/data/icons/octicons/1024/markdown-128.png" />' +
+				'<style>'+customCSSforMarkdown+'</style>' +
+				'<script src="/socket.io/socket.io.js"></script>' +
+				'</head>' +
+				'<body>'+
+					'<article class="markdown-body">'+
+						'<h1>Index of '+path+'</h1>'+
+						list+
+						'<sup> <hr> Served by <a href="https://www.npmjs.com/package/markserv">MarkServ</a> </sup>'+
+				 	'</article>'+
+				 '</body>'+
+				''
+				;
+			
 
 	  	msg('index').write(path).reset().write('\n');
 	  	res.writeHead(200, {'Content-Type': 'text/html'});
 	  	res.write(html);
 	  	res.end();
 
+
+	  // Other Files (mime handled by 'send')
 	  } else {
     	msg('serve-file').write(path).reset().write('\n');
     	send(req, path, {root:dir}).pipe(res);

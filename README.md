@@ -85,6 +85,17 @@ Example link:
 [Skateboarding Dog!](Linked-Markdown-Example)
 
 
+###Using With Auto-Save for SublimeText
+
+Coming soon...
+
+https://packagecontrol.io/packages/auto-save
+
+
+
+
+
+
 ##Options/Flags
 
 To list the options/flags for the markserv CLI tool:
@@ -108,7 +119,6 @@ You can change the HTTP Port  like this:
 ```shell
 markserv -p 80
 ```
-
 
 
 
