@@ -25,12 +25,6 @@ I put some _Node.js_ on it :)
  - Changes to Markdown update in your browser whenever you save your Markdown file
  - Links to extermal Markdown files re-written and followed by the server
 
-##Pre-Requisites
-
- - Node.js & NPM
- - Web Browser
- - Text Editor
-
 ##Installation
 
 Install the markserv server via npm.
@@ -49,16 +43,32 @@ Start the HTTP markdown server in the current directory on port 8080
 
     markserv
 
-Point your browser to README.md
+You should see something like this:
+
+![markserv CLI output](http://i.imgur.com/Ii8ydEN.png)
+
+Click on the "address" link in your terminal to open the browser and index the directory:
+
+![Showing Indexes in markserv](http://i.imgur.com/hwWULtl.png)
+
+In the browser, click on a Markdown file, like "README.md", and markserv should render the Markdown file as HTML in your browser.
 
 ![Expected output](http://i.imgur.com/yWv8dGZ.png)
+
+Watch your CLI for server hints:
+
+ - Diretory Indexes
+ - Files Served
+ - Markdown file updates
+ - Errors
+
+![markserv CLI being chatty](http://i.imgur.com/TuO78gt.png)
 
 ###Realtime/Live editing
 
 Edit your markdown file, and you should now see the page reloading as you save your Markdown file. It should save your scroll position, which helps when editing extemely large documents.
 
 ![Live editing example](http://i.imgur.com/duvFBOF.gif)
-
 
 ###Linking to an external Markdown file
 
@@ -73,6 +83,42 @@ Example code:
 Example link:
 
 [Skateboarding Dog!](Linked-Markdown-Example)
+
+
+##Options/Flags
+
+To list the options/flags for the markserv CLI tool:
+
+```shell
+markserv --help
+```
+
+###Changing the HTTP Directory
+
+You can serve content from a different path using the following command:
+
+```shell
+markserv -h /path/to/dir
+```
+
+###Changing the HTTP Port
+
+You can change the HTTP Port  like this:
+
+```shell
+markserv -p 80
+```
+
+
+
+
+
+##Pre-Requisites
+
+ - Node.js & NPM
+ - Web Browser
+ - Text Editor
+
 
 
 ##How does it work?

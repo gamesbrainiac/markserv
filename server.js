@@ -15,7 +15,7 @@ var Promise = require('bluebird')
 
 
 flags
-  .version('0.0.7')
+  .version('0.0.8')
   .option('-h, --home [type]', 'Serve from directory [home]', './')
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
   .parse(process.argv);
@@ -236,7 +236,7 @@ flags
 			res.end(html);
 
 			fs.watch(path, function () {
-				msg('update').write('Can\'t build Markdown to HTML: ',err).reset().write('\n');
+				msg('update').write(path).reset().write('\n');
 			  io.sockets.emit('refresh', + new Date());
 			});
 
