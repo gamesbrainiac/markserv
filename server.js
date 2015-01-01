@@ -11,11 +11,12 @@ var Promise = require('bluebird')
 	, jsdom = require('jsdom')
 	, ansi = require('ansi')
   , cursor = ansi(process.stdout)
+  , pkg = require('./package.json');
 	;
 
 
 flags
-  .version('0.0.8')
+  .version(pkg.version)
   .option('-h, --home [type]', 'Serve from directory [home]', './')
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
   .parse(process.argv);
@@ -225,19 +226,11 @@ flags
 	  		}else{
 	  			href=subPath;
 	  			 
-	  			 // var  subPath = dir+req.originalUrl.split('?')[0]
-	  				// , end = path.substr(path.length-3).toLowerCase()
-	  				// , isMarkdown = end === '.md'.toLowerCase();
-
-
-	  				// console.log(subPath.split('.md'))
-
-	  			// if(subPath.split('.md')[1]==='.md'){
-	  				// list+='\t<li class="md"><a href="'+href+'">'+href+'</a></li> \n';
-	  			// }else{
+	  			if(subPath.split('.md')[1]===''){
+	  				list+='\t<li class="md"><a href="'+href+'">'+href+'</a></li> \n';
+	  			}else{
 	  				list+='\t<li class="file"><a href="'+href+'">'+href+'</a></li> \n';
-	  			// }
-
+	  			}
 	  		}
 	  	})
 	  	list += '</ul>\n';

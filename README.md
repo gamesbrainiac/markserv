@@ -4,6 +4,8 @@
 
 markserv lets you edit markdown documents and view the changes in your web browser, realtime! markserv saves your scroll position in the browser as you edit :)
 
+![Live editing example](http://i.imgur.com/D4MFCMr.gif)
+
 ##Why is it?
 
 markserv is designed to replace a Apache + Marked2 workflow. 
@@ -23,9 +25,9 @@ I put some _Node.js_ on it :)
  - Markdown rendered with GitHub flavor CSS
  - Markdown rendered with GitHub style syntax highlighting
  - Changes to Markdown update in your browser whenever you save your Markdown file
- - Links to extermal Markdown files re-written and followed by the server
+ - Links to external Markdown files re-written and followed by the server
 
-##Installation
+##Installing
 
 Install the markserv server via npm.
 
@@ -47,9 +49,9 @@ You should see something like this:
 
 ![markserv CLI output](http://i.imgur.com/Ii8ydEN.png)
 
-Click on the "address" link in your terminal to open the browser and index the directory:
+Click on the address link such as [http://0.0.0.0:8080](http://0.0.0.0:8080) in your terminal to open the browser and index the directory:
 
-![Showing Indexes in markserv](http://i.imgur.com/hwWULtl.png)
+![Showing Indexes in markserv](http://i.imgur.com/fjMPutk.png)
 
 In the browser, click on a Markdown file, like "README.md", and markserv should render the Markdown file as HTML in your browser.
 
@@ -68,7 +70,7 @@ Watch your CLI for server hints:
 
 Edit your markdown file, and you should now see the page reloading as you save your Markdown file. It should save your scroll position, which helps when editing extemely large documents.
 
-![Live editing example](http://i.imgur.com/duvFBOF.gif)
+![Live editing example](http://i.imgur.com/D4MFCMr.gif)
 
 ###Linking to an external Markdown file
 
