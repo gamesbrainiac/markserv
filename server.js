@@ -15,11 +15,13 @@ var Promise = require('bluebird')
 	;
 
 
+var  GitHubStyle = __dirname+'/less/github.less';
+
 flags
   .version(pkg.version)
   .option('-h, --home [type]', 'Serve from directory [home]', './')
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
-  .option('-s, --less [type]', 'Path to LESS styles [less]', __dirname+'less/github.less')
+  .option('-s, --less [type]', 'Path to Less styles [less]', GitHubStyle)
   .parse(process.argv);
 	;
 
@@ -61,6 +63,9 @@ flags
 		.write('\n')
 		;
 
+
+
+
 	var address = server.address();
 
 
@@ -72,6 +77,23 @@ flags
 		.reset()
 		.write('\n')
 		;
+
+
+
+	var startMsg = 'serving content from "'+flags.home+'" on port: '+flags.port;
+	msg('less')
+		.write('using style from ')
+		// .fg.rgb(0,128,255)
+		.fg.rgb(255,255,255)
+		.write(flags.less)
+		.reset()
+		.write('\n')
+		;
+
+
+
+
+
 
 
 
@@ -157,21 +179,38 @@ flags
 						title = dirs[dirs.length-1].split('.md')[0];
 						// console.log(title);
 
-						var html = '<!DOCTYPE html>' +
-							'<head>' +
-							'<title>'+title+'</title>' +
-							'<meta charset="utf-8">' +
-							// '<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>'+
-							'<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>'+
-						  '<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>'+
-						  '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">' +
-						  '<link rel="shortcut icon" type="image/x-icon" href="https://cdn0.iconfinder.com/data/icons/octicons/1024/markdown-128.png" />' +
-							'<style>'+css+'</style>' +
-							'<script src="/socket.io/socket.io.js"></script>' +
-							'</head>' +
-							'<body><article class="markdown-body">'+body+'</article></body>'+
-							'<script>'+script+'</script>' +
-							'';
+						if(flags.less === GitHubStyle){
+							var html = '<!DOCTYPE html>' +
+								'<head>' +
+								'<title>'+title+'</title>' +
+								'<meta charset="utf-8">' +
+								// '<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>'+
+								'<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>'+
+							  '<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>'+
+							  '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">' +
+							  '<link rel="shortcut icon" type="image/x-icon" href="https://cdn0.iconfinder.com/data/icons/octicons/1024/markdown-128.png" />' +
+								'<style>'+css+'</style>' +
+								'<script src="/socket.io/socket.io.js"></script>' +
+								'</head>' +
+								'<body><article class="markdown-body">'+body+'</article></body>'+
+								'<script>'+script+'</script>' +
+								'';	
+						} else {
+							var html = '<!DOCTYPE html>' +
+								'<head>' +
+								'<title>'+title+'</title>' +
+								'<meta charset="utf-8">' +
+								'<style>'+customCSSforMarkdown+'</style>' +
+								'<script src="/socket.io/socket.io.js"></script>' +
+								'</head>' +
+								'<body>'+
+									'<article class="markdown-body">'+
+										body +
+								 	'</article>'+
+								 '</body>'+
+								''
+								;
+						}
 						
 						resolve(html);
 					})
@@ -236,7 +275,6 @@ flags
 	  	})
 	  	list += '</ul>\n';
 
-	  
 	  	var html = '<!DOCTYPE html>' +
 				'<head>' +
 				'<title>'+path+'</title>' +
@@ -258,7 +296,7 @@ flags
 				 '</body>'+
 				''
 				;
-			
+
 
 	  	msg('index').write(path).reset().write('\n');
 	  	res.writeHead(200, {'Content-Type': 'text/html'});
