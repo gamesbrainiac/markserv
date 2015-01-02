@@ -7,10 +7,10 @@ var Promise = require('bluebird')
 	, less = require('less')
 	, fs = require('fs')
 	, send = require('send')
-	, flags = require('commander')
 	, jsdom = require('jsdom')
 	, ansi = require('ansi')
   , cursor = ansi(process.stdout)
+	, flags = require('commander')
   , pkg = require('./package.json');
 	;
 
@@ -19,12 +19,13 @@ flags
   .version(pkg.version)
   .option('-h, --home [type]', 'Serve from directory [home]', './')
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
+  .option('-s, --less [type]', 'Path to LESS styles [less]', __dirname+'less/github.less')
   .parse(process.argv);
 	;
 
 	var dir = flags.home
 		, scriptPath = __dirname+'/script/script.js'
-		, cssPath = __dirname+'/less/github.less'
+		, cssPath = flags.less
 		;
 
 	var app = connect().use('/', onRequest);

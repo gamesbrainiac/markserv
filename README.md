@@ -135,6 +135,16 @@ markserv -p 80
 
 ##How does it work?
 
-markserv watches for file updates to the markdown file, and to the CSS directory, and autoamatically reloads the Markdown page via websockets. markserv remembers the scroll position you were at in the web browser, and reloads the page with the same scroll position when you make changes.
+markserv watches for file updates to the markdown file, and to the CSS directory, and automatically reloads the Markdown page via web sockets. markserv remembers the scroll position you were at in the web browser, and reloads the page with the same scroll position when you make changes.
 
 markserv was built for working on projects that contain a combination of web content and Markdown, where the markdown gets reloaded on the fly as the file is saved in your text editor. But it also serves regular HTTP content, replacing the need for a more bulky web server setup using MAMP, etc.
+
+##Credits
+
+###Logo Credits
+
+| Logo | Name | Credit |
+|-|-|-|
+| ![Markdown Icon](https://cdn0.iconfinder.com/data/icons/octicons/1024/markdown-64.png) | Markdown icon | [Octicon Icons by Github](https://www.iconfinder.com/icons/298823/markdown_icon#size=64) |
+| ![File Icon](https://cdn4.iconfinder.com/data/icons/linecon/512/file-64.png) | File icon | [Linecon by W3 Creative Labs](https://www.iconfinder.com/icons/370083/document_file_files_page_paper_sheet_icon#size=64) |
+| ![Folder Icon](https://cdn1.iconfinder.com/data/icons/hawcons/32/699086-icon-94-folder-64.png) | Folder icon | [Hawcons by Yannick Lung](https://www.iconfinder.com/icons/314937/folder_icon#size=64) |
