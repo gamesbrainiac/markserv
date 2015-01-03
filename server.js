@@ -330,13 +330,16 @@ flags
 	}
 
 // Watch for style changes if running from package dir
-fs.exists('./less', function(exists) {
-    if (exists) {
-		fs.watch('./less', function (curr, prev) {
-		  io.sockets.emit('refresh', + new Date());
-		});
-    }
-});
+// fs.exists('./less', function(exists) {
+// if (exists) {
+
+console.log(flags.less);
+
+	fs.watch(flags.less, function (curr, prev) {
+	  io.sockets.emit('refresh', + new Date());
+	});
+// }
+// });
 
 
 
