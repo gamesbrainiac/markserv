@@ -1,22 +1,14 @@
 #markserv
 
-##What is it?
-
-markserv lets you edit markdown documents and view the changes in your web browser, realtime! markserv saves your scroll position in the browser as you edit :)
+`markserv` serves Markdown files as GitHub style HTML and LiveReloads your files in the browser as you edit.
 
 ![Live editing example](http://i.imgur.com/D4MFCMr.gif)
 
-##Why is it?
+##Why Does It Exist?
 
 markserv is designed to replace a Apache + Marked2 workflow. 
 
 I purchased [Marked2](http://marked2app.com/) after seeing a colleage use it to edit markdown content. It looked awesome, but it felt clunky. And it didn't integrate with my almost constant CLI usage. While I found Marked2 to have a very well-rounded feature set, it was simply too slow, and too memory intensive.
-
-So...
-
-I put some _Node.js_ on it :)
-
-![Skateboarding Dog](http://media.giphy.com/media/yN6TNQhiIxeW4/giphy.gif)
 
 ##Features
 
@@ -24,8 +16,8 @@ I put some _Node.js_ on it :)
  - HTTP server renders Markdown files as HTML
  - Markdown rendered with GitHub flavor CSS
  - Markdown rendered with GitHub style syntax highlighting
- - Changes to Markdown update in your browser whenever you save your Markdown file
- - Links to external Markdown files re-written and followed by the server
+ - LiveReload updates the view when your files change
+ - Links to external Markdown files are re-written and followed by the server
 
 ##Installing
 
@@ -116,12 +108,11 @@ markserv -h /path/to/dir
 
 ###Changing the HTTP Port
 
-You can change the HTTP Port  like this:
+You can change the HTTP Port like this:
 
 ```shell
 markserv -p 80
 ```
-
 
 
 
@@ -141,10 +132,17 @@ markserv was built for working on projects that contain a combination of web con
 
 ##Credits
 
-###Logo Credits
+### Logo Credits
 
-| Logo | Name | Credit |
-|-|-|-|
-| ![Markdown Icon](https://cdn0.iconfinder.com/data/icons/octicons/1024/markdown-64.png) | Markdown icon | [Octicon Icons by Github](https://www.iconfinder.com/icons/298823/markdown_icon#size=64) |
-| ![File Icon](https://cdn4.iconfinder.com/data/icons/linecon/512/file-64.png) | File icon | [Linecon by W3 Creative Labs](https://www.iconfinder.com/icons/370083/document_file_files_page_paper_sheet_icon#size=64) |
-| ![Folder Icon](https://cdn1.iconfinder.com/data/icons/hawcons/32/699086-icon-94-folder-64.png) | Folder icon | [Hawcons by Yannick Lung](https://www.iconfinder.com/icons/314937/folder_icon#size=64) |
+
+![Markdown Icon](https://cdn0.iconfinder.com/data/icons/octicons/1024/markdown-32.png)
+
+**Markdown Icon** | [Octicon Icons by Github](https://www.iconfinder.com/icons/298823/markdown_icon#size=32)
+
+![File Icon](https://cdn4.iconfinder.com/data/icons/linecon/512/file-32.png)
+
+**File icon** | [Linecon by W3 Creative Labs](https://www.iconfinder.com/icons/370083/document_file_files_page_paper_sheet_icon#size=32)
+
+![Folder Icon](https://cdn1.iconfinder.com/data/icons/hawcons/32/699086-icon-94-folder-32.png)
+
+**Folder icon** | [Hawcons by Yannick Lung](https://www.iconfinder.com/icons/314937/folder_icon#size=32)

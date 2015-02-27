@@ -1,13 +1,13 @@
 {
   "name": "markserv",
   "version": "0.0.12",
-  "description": "markserv reloads your markdown files in the browser as you edit",
-  "keywords":{
+  "description": "markserv serves Markdown files as GitHub style HTML and LiveReloads your files in the browser as you edit.",
+  "keywords": [
     "markdown",
     "livereload",
     "server",
     "github"
-  },
+  ],
   "bin": {
     "markserv": "server.js"
   },
@@ -25,10 +25,11 @@
     "connect": "^3.3.3",
     "connect-livereload": "^0.5.3",
     "jsdom": "^2.0.0",
-    "less": "^2.1.1",
+    "less": "^2.4.0",
     "livereload": "^0.3.6",
+    "livereload-js": "^2.2.2",
     "marked": "^0.3.2",
     "mime": "^1.2.11",
-    "send": "^0.10.1",
+    "send": "^0.10.1"
   }
 }

@@ -3,7 +3,7 @@
 
 // Requirements
 
-var promise = require('bluebird'),
+var Promise = require('bluebird'),
 	connect = require('connect'),
 	http = require('http'),
 	marked = require('marked'),
@@ -103,10 +103,11 @@ msg('less')
 
 
 
+
 // getFile: reads utf8 content from a file
 
 function getFile(path){
-	return new promise(function (resolve, reject) {
+	return new Promise(function (resolve, reject) {
 		fs.readFile(path, 'utf8', function(err, data){
 			if (err) return reject(err);
 			resolve(data);
@@ -115,20 +116,27 @@ function getFile(path){
 }
 
 
+
+
 // Get Custom Less CSS to use in all Markdown files
 
 var customCSSforMarkdown;
+
 getFile(cssPath)
 	.then(less.render)
 	.then(function(data){
+		console.log(123123123);
+		console.log(data);
 		customCSSforMarkdown = data.css;
 	});
+
+
 
 
 // linkify: converts github style wiki markdown links to .md links
 
 function linkify(body){
-	return new promise(function (resolve, reject) {
+	return new Promise(function (resolve, reject) {
 		jsdom.env(body, function (err, window) {
 			if (err) return reject(err);
 
@@ -167,7 +175,7 @@ function linkify(body){
 // buildHTMLFromMarkDown: compiles the final HTML/CSS output from Markdown/Less files, includes JS
 
 function buildHTMLFromMarkDown(markdownPath){
-	return new promise(function (resolve, reject) {
+	return new Promise(function (resolve, reject) {
 		var css, body;
 
 		getFile(cssPath)
@@ -177,7 +185,7 @@ function buildHTMLFromMarkDown(markdownPath){
 			css = data.css;
 			customCSSforMarkdown = data.css;
 
-			var filePath = markdownPath.split('?')[0];
+			var filePath = markdownPath;
 			getFile(filePath).then(function(data){
 				return markdownToHTML(data);
 			})
@@ -193,7 +201,7 @@ function buildHTMLFromMarkDown(markdownPath){
 					title = dirs[dirs.length-1].split('.md')[0];
 					// console.log(title);
 
-					// Maybe use somethin like handlbars here?
+					// Maybe use something like handlbars here?
 
 					if(flags.less === GitHubStyle){
 						html = '<!DOCTYPE html>' +
@@ -237,7 +245,7 @@ function buildHTMLFromMarkDown(markdownPath){
 // markdownToHTML: turns a Markdown file into HTML content
 
 function markdownToHTML(markdownText){
-	return new promise(function (resolve, reject) {
+	return new Promise(function (resolve, reject) {
 		marked(markdownText, function(err, data){
 			if (err) return reject(err);
 			resolve(data);
@@ -251,7 +259,7 @@ function markdownToHTML(markdownText){
 function compileAndSend(path, res){
 	buildHTMLFromMarkDown(path)
   .then(function(html){
-		res.writeHead(200);
+  	res.writeHead(200);
 		res.end(html);
 
 	// Catch if something breaks...
