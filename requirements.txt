@@ -1,4 +1,0 @@
-# Node
-nodeenv
-# afterwards run "nodeenv -p"
-# at some point... create bootstrap script
