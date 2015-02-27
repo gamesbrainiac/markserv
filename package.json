@@ -1,7 +1,13 @@
 {
   "name": "markserv",
-  "version": "0.0.11",
-  "description": "markserv lets you edit markdown documents and view the changes in your web browser, realtime! markserv saves your scroll position in the browser as you edit :)",
+  "version": "0.0.12",
+  "description": "markserv reloads your markdown files in the browser as you edit",
+  "keywords":{
+    "markdown",
+    "livereload",
+    "server",
+    "github"
+  },
   "bin": {
     "markserv": "server.js"
   },
@@ -18,15 +24,11 @@
     "commander": "^2.5.1",
     "connect": "^3.3.3",
     "connect-livereload": "^0.5.3",
-    "grunt": "^0.4.5",
-    "grunt-contrib-connect": "^0.9.0",
-    "grunt-contrib-watch": "^0.6.1",
     "jsdom": "^2.0.0",
     "less": "^2.1.1",
     "livereload": "^0.3.6",
     "marked": "^0.3.2",
     "mime": "^1.2.11",
     "send": "^0.10.1",
-    "socket.io": "^1.2.1"
   }
 }
