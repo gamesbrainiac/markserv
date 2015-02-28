@@ -66,7 +66,7 @@ var httpServer = http.createServer(app).listen(flags.port),
 		address = httpServer.address();
 
 var lrServer = liveReload.createServer({
-  exts: 'md'
+  exts: markdownExtensions
 }).watch(flags.home);
 
 var serveURL = 'http://'+address.address+':'+address.port;

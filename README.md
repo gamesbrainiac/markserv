@@ -4,11 +4,13 @@
 
 ![Live editing example](http://i.imgur.com/D4MFCMr.gif)
 
+
 ## Why Does It Exist?
 
-markserv is designed to replace a Apache + Marked2 workflow. 
+markserv is designed to replace a Apache + Marked2 workflow.
 
 I purchased [Marked2](http://marked2app.com/) after seeing a colleage use it to edit markdown content. It looked awesome, but it felt clunky. And it didn't integrate with my almost constant CLI usage. While I found Marked2 to have a very well-rounded feature set, it was simply too slow, and too memory intensive.
+
 
 ## Features
 
@@ -18,6 +20,7 @@ I purchased [Marked2](http://marked2app.com/) after seeing a colleage use it to 
  - Markdown rendered with GitHub style syntax highlighting
  - LiveReload updates the view when your files change
  - Links to external Markdown files are re-written and followed by the server
+
 
 ## Installing
 
@@ -58,11 +61,13 @@ Watch your CLI for server hints:
 
 ![markserv CLI being chatty](http://i.imgur.com/TuO78gt.png)
 
+
 ### Realtime/Live editing
 
 Edit your markdown file, and you should now see the page reloading as you save your Markdown file. It should save your scroll position, which helps when editing extemely large documents.
 
 ![Live editing example](http://i.imgur.com/D4MFCMr.gif)
+
 
 ### Linking to an external Markdown file
 
@@ -84,9 +89,6 @@ Example link:
 Coming soon...
 
 https://packagecontrol.io/packages/auto-save
-
-
-
 
 
 
@@ -126,7 +128,7 @@ markserv -p 80
 
 ## How does it work?
 
-markserv watches for file updates to the markdown file, and to the CSS directory, and automatically reloads the Markdown page via web sockets. markserv remembers the scroll position you were at in the web browser, and reloads the page with the same scroll position when you make changes.
+markserv watches for file updates to the markdown file, and to the CSS directory, and automatically reloads the Markdown page via LiveReload. markserv remembers the scroll position you were at in the web browser, and reloads the page with the same scroll position when you make changes.
 
 markserv was built for working on projects that contain a combination of web content and Markdown, where the markdown gets reloaded on the fly as the file is saved in your text editor. But it also serves regular HTTP content, replacing the need for a more bulky web server setup using MAMP, etc.
 
