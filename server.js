@@ -1,6 +1,21 @@
 #!/usr/bin/env node
 
 
+// Markdown Extension Types
+
+var markdownExtensions = [
+  '.markdown',
+  '.mdown',
+  '.mkdn',
+  '.md',
+  '.mkd',
+  '.mdwn',
+  '.mdtxt',
+  '.mdtext',
+  '.text'
+];
+
+
 // Requirements
 
 var Promise = require('bluebird'),
@@ -19,6 +34,7 @@ var Promise = require('bluebird'),
 	connectLiveReload = require('connect-livereload');
 
 
+
 // Path Variables
 
 var GitHubStyle = __dirname+'/less/github.less',
@@ -26,11 +42,14 @@ var GitHubStyle = __dirname+'/less/github.less',
 
 // Options
 
-flags.version(pkg.version)
+
+var r = flags.version(pkg.version)
   .option('-h, --home [type]', 'Serve from directory [home]', './')
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
   .option('-s, --less [type]', 'Path to Less styles [less]', GitHubStyle)
   .parse(process.argv);
+
+
 
 var dir = flags.home,
 	cssPath = flags.less;
@@ -46,7 +65,9 @@ var app = connect()
 var httpServer = http.createServer(app).listen(flags.port),
 		address = httpServer.address();
 
-var lrServer = liveReload.createServer().watch(flags.home);
+var lrServer = liveReload.createServer({
+  exts: 'md'
+}).watch(flags.home);
 
 var serveURL = 'http://'+address.address+':'+address.port;
 
@@ -116,21 +137,17 @@ function getFile(path){
 }
 
 
-
-
 // Get Custom Less CSS to use in all Markdown files
 
 var customCSSforMarkdown;
 
 getFile(cssPath)
-	.then(less.render)
-	.then(function(data){
-		console.log(123123123);
-		console.log(data);
-		customCSSforMarkdown = data.css;
-	});
-
-
+  .then(function(data){
+    less.render(data)
+      .then(function(data){
+	      customCSSforMarkdown = data.css;
+      });
+  });
 
 
 // linkify: converts github style wiki markdown links to .md links
@@ -176,67 +193,56 @@ function linkify(body){
 
 function buildHTMLFromMarkDown(markdownPath){
 	return new Promise(function (resolve, reject) {
-		var css, body;
+		var css = customCSSforMarkdown, body;
 
-		getFile(cssPath)
-		.then(less.render)
+		var filePath = markdownPath;
+		getFile(filePath).then(function(data){
+			return markdownToHTML(data);
+		})
+		.then(linkify)
 		.then(function(data){
 
-			css = data.css;
-			customCSSforMarkdown = data.css;
+			body = data;
 
-			var filePath = markdownPath;
-			getFile(filePath).then(function(data){
-				return markdownToHTML(data);
-			})
-			.then(linkify)
-			.then(function(data){
+			getFile(scriptPath).then(function(script){
 
-				body = data;
+				var html;
+				var dirs = markdownPath.split('/');
+				title = dirs[dirs.length-1].split('.md')[0];
+				// console.log(title);
 
-				getFile(scriptPath).then(function(script){
+				// Maybe use something like handlbars here?
 
-					var html;
-					var dirs = markdownPath.split('/');
-					title = dirs[dirs.length-1].split('.md')[0];
-					// console.log(title);
+				if(flags.less === GitHubStyle){
+					html = '<!DOCTYPE html>' +
+						'<head>' +
+						'<title>'+title+'</title>' +
+						'<meta charset="utf-8">' +
+						'<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>'+
+					    '<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>'+
+					    '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">' +
+					    '<link rel="shortcut icon" type="image/x-icon" href="https://cdn0.iconfinder.com/data/icons/octicons/1024/markdown-128.png" />' +
+						'<style>'+css+'</style>' +
+						'</head>' +
+						'<body><article class="markdown-body">'+body+'</article></body>'+
+						'<script src="http://localhost:35729/livereload.js?snipver=1"></script>';
+				} else {
+					html = '<!DOCTYPE html>' +
+						'<head>' +
+						'<title>'+title+'</title>' +
+						'<meta charset="utf-8">' +
+						'<style>'+customCSSforMarkdown+'</style>' +
+						'</head>' +
+						'<body>'+
+							'<article class="markdown-body">'+
+								body +
+						 	'</article>'+
+						 '</body>'+
+						'<script src="http://localhost:35729/livereload.js?snipver=1"></script>';
+				}
 
-					// Maybe use something like handlbars here?
-
-					if(flags.less === GitHubStyle){
-						html = '<!DOCTYPE html>' +
-							'<head>' +
-							'<title>'+title+'</title>' +
-							'<meta charset="utf-8">' +
-							'<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>'+
-						    '<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>'+
-						    '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">' +
-						    '<link rel="shortcut icon" type="image/x-icon" href="https://cdn0.iconfinder.com/data/icons/octicons/1024/markdown-128.png" />' +
-							'<style>'+css+'</style>' +
-							'</head>' +
-							'<body><article class="markdown-body">'+body+'</article></body>'+
-							'<script src="http://localhost:35729/livereload.js?snipver=1"></script>';
-					} else {
-						html = '<!DOCTYPE html>' +
-							'<head>' +
-							'<title>'+title+'</title>' +
-							'<meta charset="utf-8">' +
-							'<style>'+customCSSforMarkdown+'</style>' +
-							'</head>' +
-							'<body>'+
-								'<article class="markdown-body">'+
-									body +
-							 	'</article>'+
-							 '</body>'+
-							'<script src="http://localhost:35729/livereload.js?snipver=1"></script>';
-					}
-
-					resolve(html);
-				});
+				resolve(html);
 			});
-		})
-		.catch(function(err){
-			reject(err);
 		});
 	});
 }
@@ -265,9 +271,26 @@ function compileAndSend(path, res){
 	// Catch if something breaks...
 	}).catch(function(err){
 		msg('error')
-		.write('Can\'t build HTML: ',err)
+		.write('Can\'t build HTML: ', err)
 		.reset().write('\n');
 	});
+}
+
+
+
+// hasMarkdownExtension: check whether a file is Markdown type
+
+function hasMarkdownExtension(path){
+  var fileExtension = path.substr(path.length-3).toLowerCase()
+    extensionMatch = false;
+
+  markdownExtensions.forEach(function(extension){
+    if (extension === fileExtension){
+      extensionMatch = true;
+    }
+  });
+
+  return extensionMatch;
 }
 
 
@@ -276,15 +299,16 @@ function compileAndSend(path, res){
 
 function onRequest(req, res, next){
 	msg('request')
-	.write(dir+req.originalUrl)
-	.reset().write('\n')
-	;
+	 .write(dir+req.originalUrl)
+	 .reset().write('\n');
 
-  var path = dir+req.originalUrl,
-  // var path = dir+req.originalUrl.split('?')[0],
-  	end = path.substr(path.length-3).toLowerCase(),
-  	isMarkdown = end === '.md'.toLowerCase(),
-  	isDir = fs.statSync(path).isDirectory();
+  var path = dir+req.originalUrl;
+  var isDir = fs.statSync(path).isDirectory();
+  var isMarkdown = false;
+
+  if(!isDir){
+    isMarkdown = hasMarkdownExtension(path);
+  }
 
 
   // Markdown: Browser is requesting a Markdown file...
