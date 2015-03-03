@@ -48,7 +48,7 @@ var r = flags.version(pkg.version)
   // .option('-a, --address [type]', 'Server from IP Address [0.0.0.0]', '0.0.0.0')
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
   .option('-s, --less [type]', 'Path to Less styles [less]', GitHubStyle)
-  .option('-v, --verbose [type]', 'verbose output')
+  .option('-v, --verbose', 'verbose output')
   .parse(process.argv);
 
 
@@ -56,34 +56,28 @@ var r = flags.version(pkg.version)
 var dir = flags.home,
 	cssPath = flags.less;
 
-
-
 // Servers: Connect / HTTP / LiveEeload
 
 var app = connect()
 	.use('/', onRequest)
 	.use(connectLiveReload({port: 35729}));
 
-var httpServer = http.createServer(app).listen(flags.port),
-		address = httpServer.address();
+var httpServer = http.createServer(app).listen(flags.port);
+var address = httpServer.address();
 
 var lrServer = liveReload.createServer({
   exts: markdownExtensions
 }).watch(flags.home);
 
 
-var realAddress = address.address === "::" ? "localhost" : address.address;
-
-var serveURL = 'http://'+realAddress+':'+address.port;
-
 
 // Terminal Output Messages
 
 function msg(type){
 	return cursor
-		.bg.rgb(128, 255, 0)
+		.bg.rgb(64, 128, 0)
 		.fg.rgb(0,0,0)
-		.write(' markserv ')
+		.write(' Markserv ')
 		.reset()
 		.fg.rgb(200,200,200)
 		.write(' '+type+': ')
@@ -91,8 +85,8 @@ function msg(type){
 		;
 }
 
-
-
+var urlSafeAddress = address.address === "::" ? "localhost" : address.address;
+var serveURL = 'http://'+urlSafeAddress+':'+address.port;
 
 msg('start')
 	.write('serving content from ')
@@ -204,7 +198,6 @@ function linkify(body){
 			  if (isFileHref && mdFileExists) {
 				  relativeURL = href.replace('file://'+__dirname, '')+'.md';
 			    link.href=relativeURL;
-					// console.log(relativeUrl);
 				}
 			}
 
@@ -325,9 +318,11 @@ function hasMarkdownExtension(path){
 // onRequest: handles all the browser requests
 
 function onRequest(req, res, next){
-	msg('request')
-	 .write(dir+req.originalUrl)
-	 .reset().write('\n');
+	if (flags.verbose){
+    msg('request')
+  	 .write(dir+req.originalUrl)
+  	 .reset().write('\n');
+  }
 
   var path = dir+req.originalUrl;
   var isDir = fs.statSync(path).isDirectory();
@@ -342,7 +337,9 @@ function onRequest(req, res, next){
 
   if (isMarkdown) {
 
-  	msg('md-to-html').write(path).reset().write('\n');
+  	if (flags.verbose){
+      msg('markdown-to-html').write(path).reset().write('\n');
+    }
   	compileAndSend(path, res);
 
 
@@ -391,18 +388,24 @@ function onRequest(req, res, next){
 			 '</body>'+
 			'<script src="http://localhost:35729/livereload.js?snipver=1"></script>';
 
-  	// Log and send the file
-  	msg('index').write(path).reset().write('\n');
-  	res.writeHead(200, {'Content-Type': 'text/html'});
+  	// Log if verbose
+
+  	if (flags.verbose){
+      msg('index').write(path).reset().write('\n');
+    }
+
+    // Send file
+    res.writeHead(200, {'Content-Type': 'text/html'});
   	res.write(html);
   	res.end();
 
   // Other: Browser is requesting a default Mime typed file... (mime type handled by 'send')
 
   } else {
+  	if (flags.verbose){
+      msg('serve-file').write(path).reset().write('\n');
+    }
 
-  	msg('serve-file').write(path).reset().write('\n');
   	send(req, path, {root:dir}).pipe(res);
-
   }
 }
