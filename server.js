@@ -21,6 +21,7 @@ var markdownExtensions = [
 var Promise = require('bluebird'),
 	connect = require('connect'),
 	http = require('http'),
+  path = require('path'),
 	marked = require('marked'),
 	less = require('less'),
 	fs = require('fs'),
@@ -34,7 +35,6 @@ var Promise = require('bluebird'),
 	connectLiveReload = require('connect-livereload');
 
 
-
 // Path Variables
 
 var GitHubStyle = __dirname+'/less/github.less',
@@ -45,8 +45,10 @@ var GitHubStyle = __dirname+'/less/github.less',
 
 var r = flags.version(pkg.version)
   .option('-h, --home [type]', 'Serve from directory [home]', './')
+  // .option('-a, --address [type]', 'Server from IP Address [0.0.0.0]', '0.0.0.0')
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
   .option('-s, --less [type]', 'Path to Less styles [less]', GitHubStyle)
+  .option('-v, --verbose [type]', 'verbose output')
   .parse(process.argv);
 
 
@@ -69,8 +71,10 @@ var lrServer = liveReload.createServer({
   exts: markdownExtensions
 }).watch(flags.home);
 
-var serveURL = 'http://'+address.address+':'+address.port;
 
+var realAddress = address.address === "::" ? "localhost" : address.address;
+
+var serveURL = 'http://'+realAddress+':'+address.port;
 
 
 // Terminal Output Messages
@@ -87,13 +91,14 @@ function msg(type){
 		;
 }
 
-var startMsg = 'serving content from "'+flags.home+'" on port: '+flags.port;
+
+
 
 msg('start')
 	.write('serving content from ')
 	// .fg.rgb(0,128,255)
 	.fg.rgb(255,255,255)
-	.write(flags.home)
+	.write(path.resolve(flags.home))
 	.reset()
 	.write(' on port: ')
 	// .fg.rgb(0,128,255)
@@ -122,6 +127,28 @@ msg('less')
 	.write('\n')
 	;
 
+
+if (process.pid) {
+  msg('process')
+    .write('your pid is: ')
+    .fg.rgb(255,255,255)
+    .write(process.pid+'')
+    .reset()
+    .write('\n');
+}
+
+if (process.pid) {
+  msg('info')
+    .write('to stop this server, press: ')
+    .fg.rgb(255,255,255)
+    .write('[Ctrl + C]')
+    .reset()
+    .write(', or type: ')
+    .fg.rgb(255,255,255)
+    .write('"kill '+process.pid+'"')
+    .reset()
+    .write('\n');
+}
 
 
 
