@@ -16,6 +16,12 @@ var markdownExtensions = [
 ];
 
 
+var PORT_RANGE = {
+  HTTP: [8000, 8100],
+  LIVE_RELOAD: [35729, 35829]
+};
+
+
 // Requirements
 
 var Promise = require('bluebird'),
@@ -33,6 +39,7 @@ var Promise = require('bluebird'),
 	flags = require('commander'),
   pkg = require('./package.json'),
 	liveReload = require('livereload'),
+  openPort = require('openport'),
 	connectLiveReload = require('connect-livereload');
 
 
@@ -57,28 +64,158 @@ var r = flags.version(pkg.version)
 var dir = flags.home,
 	cssPath = flags.less;
 
-// Servers: Connect / HTTP / LiveEeload
 
-var app = connect()
-	.use('/', onRequest)
-	.use(connectLiveReload({port: 35729}));
-
-var httpServer = http.createServer(app).listen(flags.port);
-var address = httpServer.address();
-
-var lrServer = liveReload.createServer({
-  exts: markdownExtensions
-}).watch(flags.home);
+var LIVE_RELOAD_PORT,
+    LIVE_RELOAD_SERVER,
+    HTTP_PORT,
+    HTTP_SERVER,
+    CONNECT_APP;
 
 
-var urlSafeAddress = address.address === "::" ? "localhost" : address.address;
-var serveURL = 'http://'+urlSafeAddress+':'+address.port;
+// Initialize MarkServ
 
-if (flags.file){
-  open(serveURL+'/'+flags.file);
-} else {
-  open(serveURL);
+findOpenPort(PORT_RANGE.LIVE_RELOAD)
+  .then(setLiveReloadPort)
+  .then(startConnectApp)
+  .then(function(){
+    findOpenPort(PORT_RANGE.HTTP)
+    .then(setHTTPPort)
+    .then(startHTTPServer)
+    .then(startLiveReloadServer)
+    .then(serversActivated);
+  });
+
+
+function findOpenPort(range){
+  return new Promise(function (resolve, reject) {
+    openPort.find({startingPort: range[0], endingPort: range[1]},
+      function(err, port) {
+        if(err) return reject(err);
+        resolve(port);
+      }
+    );
+  });
 }
+
+function setLiveReloadPort(port){
+  return new Promise(function (resolve, reject) {
+    LIVE_RELOAD_PORT = port;
+    resolve(port);
+  });
+}
+
+function setHTTPPort(port){
+  return new Promise(function (resolve, reject) {
+    HTTP_PORT = port;
+    resolve(port);
+  });
+}
+
+function startConnectApp(live_reload_port){
+  return new Promise(function (resolve, reject) {
+    CONNECT_APP = connect()
+      .use('/', http_request_handler)
+      .use(connectLiveReload({
+        port: LIVE_RELOAD_PORT
+      }));
+    resolve(CONNECT_APP);
+  });
+}
+
+function startHTTPServer(){
+  return new Promise(function (resolve, reject) {
+    HTTP_SERVER = http.createServer(CONNECT_APP);
+    HTTP_SERVER.listen(HTTP_PORT);
+    resolve(HTTP_SERVER)
+  });
+}
+
+
+function startLiveReloadServer(){
+  return new Promise(function (resolve, reject) {
+    LIVE_RELOAD_SERVER = liveReload.createServer({
+      exts: markdownExtensions,
+      port: LIVE_RELOAD_PORT
+    }).watch(flags.home);
+
+    resolve(LIVE_RELOAD_SERVER);
+  });
+}
+
+function serversActivated(){
+  var address = HTTP_SERVER.address(); //|| {address:''};
+  var urlSafeAddress = address.address === "::" ? "localhost" : address.address;
+  var serveURL = 'http://'+urlSafeAddress+':'+address.port;
+
+  msg('start')
+   .write('serving content from ')
+   // .fg.rgb(0,128,255)
+   .fg.rgb(255,255,255)
+   .write(path.resolve(flags.home))
+   .reset()
+   .write(' on port: ')
+   // .fg.rgb(0,128,255)
+   .fg.rgb(255,255,255)
+   .write(flags.port)
+   .reset()
+   .write('\n')
+   ;
+
+  msg('address')
+   .underline()
+   // .fg.rgb(128,255,0)
+   .fg.rgb(255,255,255)
+   .write(serveURL)
+   .reset()
+   .write('\n')
+   ;
+
+  var startMsg = 'serving content from "'+flags.home+'" on port: '+flags.port;
+  msg('less')
+   .write('using style from ')
+   // .fg.rgb(0,128,255)
+   .fg.rgb(255,255,255)
+   .write(flags.less)
+   .reset()
+   .write('\n')
+   ;
+
+
+  if (process.pid) {
+    msg('process')
+      .write('your pid is: ')
+      .fg.rgb(255,255,255)
+      .write(process.pid+'')
+      .reset()
+      .write('\n');
+  }
+
+  if (process.pid) {
+    msg('info')
+      .write('to stop this server, press: ')
+      .fg.rgb(255,255,255)
+      .write('[Ctrl + C]')
+      .reset()
+      .write(', or type: ')
+      .fg.rgb(255,255,255)
+      .write('"kill '+process.pid+'"')
+      .reset()
+      .write('\n');
+  }
+
+
+    if (flags.file){
+      open(serveURL+'/'+flags.file);
+    } else {
+      open(serveURL);
+    }
+}
+
+
+
+
+
+
 
 
 
@@ -96,62 +233,6 @@ function msg(type){
 		;
 }
 
-
-msg('start')
-	.write('serving content from ')
-	// .fg.rgb(0,128,255)
-	.fg.rgb(255,255,255)
-	.write(path.resolve(flags.home))
-	.reset()
-	.write(' on port: ')
-	// .fg.rgb(0,128,255)
-	.fg.rgb(255,255,255)
-	.write(flags.port)
-	.reset()
-	.write('\n')
-	;
-
-msg('address')
-	.underline()
-	// .fg.rgb(128,255,0)
-	.fg.rgb(255,255,255)
-	.write(serveURL)
-	.reset()
-	.write('\n')
-	;
-
-var startMsg = 'serving content from "'+flags.home+'" on port: '+flags.port;
-msg('less')
-	.write('using style from ')
-	// .fg.rgb(0,128,255)
-	.fg.rgb(255,255,255)
-	.write(flags.less)
-	.reset()
-	.write('\n')
-	;
-
-
-if (process.pid) {
-  msg('process')
-    .write('your pid is: ')
-    .fg.rgb(255,255,255)
-    .write(process.pid+'')
-    .reset()
-    .write('\n');
-}
-
-if (process.pid) {
-  msg('info')
-    .write('to stop this server, press: ')
-    .fg.rgb(255,255,255)
-    .write('[Ctrl + C]')
-    .reset()
-    .write(', or type: ')
-    .fg.rgb(255,255,255)
-    .write('"kill '+process.pid+'"')
-    .reset()
-    .write('\n');
-}
 
 
 
@@ -324,9 +405,9 @@ function hasMarkdownExtension(path){
 
 
 
-// onRequest: handles all the browser requests
+// http_request_handler: handles all the browser requests
 
-function onRequest(req, res, next){
+function http_request_handler(req, res, next){
 	if (flags.verbose){
     msg('request')
   	 .write(dir+req.originalUrl)
@@ -392,7 +473,7 @@ function onRequest(req, res, next){
 				'<article class="markdown-body">'+
 					'<h1>Index of '+path+'</h1>'+
 					list+
-					'<sup> <hr> Served by <a href="https://www.npmjs.com/package/markserv">MarkServ</a> </sup>'+
+					'<sup><hr> Served by <a href="https://www.npmjs.com/package/markserv">MarkServ</a> | '+process.pid+'</sup>'+
 			 	'</article>'+
 			 '</body>'+
 			'<script src="http://localhost:35729/livereload.js?snipver=1"></script>';
