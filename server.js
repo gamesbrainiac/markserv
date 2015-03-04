@@ -21,6 +21,7 @@ var markdownExtensions = [
 var Promise = require('bluebird'),
 	connect = require('connect'),
 	http = require('http'),
+  open = require("open"),
   path = require('path'),
 	marked = require('marked'),
 	less = require('less'),
@@ -48,9 +49,9 @@ var r = flags.version(pkg.version)
   // .option('-a, --address [type]', 'Server from IP Address [0.0.0.0]', '0.0.0.0')
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
   .option('-s, --less [type]', 'Path to Less styles [less]', GitHubStyle)
+  .option('-f, --file [type]', 'Open specific file in browser [file]')
   .option('-v, --verbose', 'verbose output')
   .parse(process.argv);
-
 
 
 var dir = flags.home,
@@ -70,6 +71,16 @@ var lrServer = liveReload.createServer({
 }).watch(flags.home);
 
 
+var urlSafeAddress = address.address === "::" ? "localhost" : address.address;
+var serveURL = 'http://'+urlSafeAddress+':'+address.port;
+
+if (flags.file){
+  open(serveURL+'/'+flags.file);
+} else {
+  open(serveURL);
+}
+
+
 
 // Terminal Output Messages
 
@@ -85,8 +96,6 @@ function msg(type){
 		;
 }
 
-var urlSafeAddress = address.address === "::" ? "localhost" : address.address;
-var serveURL = 'http://'+urlSafeAddress+':'+address.port;
 
 msg('start')
 	.write('serving content from ')
