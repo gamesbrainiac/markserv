@@ -53,7 +53,6 @@ var GitHubStyle = __dirname+'/less/github.less',
 
 var r = flags.version(pkg.version)
   .option('-h, --home [type]', 'Serve from directory [home]', './')
-  // .option('-a, --address [type]', 'Server from IP Address [0.0.0.0]', '0.0.0.0')
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
   .option('-s, --less [type]', 'Path to Less styles [less]', GitHubStyle)
   .option('-f, --file [type]', 'Open specific file in browser [file]')
@@ -145,70 +144,51 @@ function startLiveReloadServer(){
 function serversActivated(){
   var address = HTTP_SERVER.address(); //|| {address:''};
   var urlSafeAddress = address.address === "::" ? "localhost" : address.address;
-  var serveURL = 'http://'+urlSafeAddress+':'+address.port;
+  var serveURL = 'http://'+urlSafeAddress+':'+HTTP_PORT;
 
   msg('start')
    .write('serving content from ')
-   // .fg.rgb(0,128,255)
-   .fg.rgb(255,255,255)
-   .write(path.resolve(flags.home))
-   .reset()
+   .fg.rgb(255,255,255).write(path.resolve(flags.home)).reset()
    .write(' on port: ')
-   // .fg.rgb(0,128,255)
-   .fg.rgb(255,255,255)
-   .write(flags.port)
-   .reset()
-   .write('\n')
-   ;
+   .fg.rgb(255,255,255).write(''+HTTP_PORT).reset()
+   .write('\n');
 
   msg('address')
-   .underline()
-   // .fg.rgb(128,255,0)
-   .fg.rgb(255,255,255)
-   .write(serveURL)
-   .reset()
-   .write('\n')
-   ;
+   .underline().fg.rgb(255,255,255)
+   .write(serveURL).reset()
+   .write('\n');
 
-  var startMsg = 'serving content from "'+flags.home+'" on port: '+flags.port;
+  var startMsg = 'serving content from "'+flags.home+'" on port: '+HTTP_PORT;
+
   msg('less')
    .write('using style from ')
-   // .fg.rgb(0,128,255)
-   .fg.rgb(255,255,255)
-   .write(flags.less)
-   .reset()
-   .write('\n')
-   ;
+   .fg.rgb(255,255,255).write(flags.less).reset()
+   .write('\n');
 
+  msg('livereload')
+    .write('communicating on port: ')
+    .fg.rgb(255,255,255).write(LIVE_RELOAD_PORT+'').reset()
+    .write('\n');
 
   if (process.pid) {
     msg('process')
       .write('your pid is: ')
-      .fg.rgb(255,255,255)
-      .write(process.pid+'')
-      .reset()
+      .fg.rgb(255,255,255).write(process.pid+'').reset()
       .write('\n');
-  }
 
-  if (process.pid) {
     msg('info')
       .write('to stop this server, press: ')
-      .fg.rgb(255,255,255)
-      .write('[Ctrl + C]')
-      .reset()
+      .fg.rgb(255,255,255).write('[Ctrl + C]').reset()
       .write(', or type: ')
-      .fg.rgb(255,255,255)
-      .write('"kill '+process.pid+'"')
-      .reset()
+      .fg.rgb(255,255,255).write('"kill '+process.pid+'"').reset()
       .write('\n');
   }
 
-
-    if (flags.file){
-      open(serveURL+'/'+flags.file);
-    } else {
-      open(serveURL);
-    }
+  if (flags.file){
+    open(serveURL+'/'+flags.file);
+  } else {
+    open(serveURL);
+  }
 }
 
 

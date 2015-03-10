@@ -21,7 +21,6 @@ I purchased [Marked2](http://marked2app.com/) after seeing a colleage use it to 
  - LiveReload updates the view when your files change
  - Links to external Markdown files are re-written and followed by the server
 
-
 ## Installing
 
 Install the markserv server via npm.
@@ -76,7 +75,7 @@ You can link to an external Markdown file in the same way that you use GitHub Wi
 Example code:
 
 ```md
-[Skateboarding Dog!](Linked-Markdown-Example)
+[Skateboarding Dog!](Linked-Markdown-Example.md)
 ```
 
 Example link:
