@@ -303,19 +303,21 @@ function buildHTMLFromMarkDown(markdownPath){
 
 				// Maybe use something like handlbars here?
 
+        console.log(GitHubStyle);
+
 				if(flags.less === GitHubStyle){
 					html = '<!DOCTYPE html>' +
 						'<head>' +
 						'<title>'+title+'</title>' +
 						'<meta charset="utf-8">' +
-						'<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>'+
-					    '<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>'+
-					    '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">' +
-					    '<link rel="shortcut icon" type="image/x-icon" href="https://cdn0.iconfinder.com/data/icons/octicons/1024/markdown-128.png" />' +
+            '<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>'+
+            '<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>'+
+            '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">' +
 						'<style>'+css+'</style>' +
 						'</head>' +
 						'<body><article class="markdown-body">'+body+'</article></body>'+
-						'<script src="http://localhost:35729/livereload.js?snipver=1"></script>';
+						'<script src="http://localhost:35729/livereload.js?snipver=1"></script>'+
+            '<script>hljs.initHighlightingOnLoad();</script>';
 				} else {
 					html = '<!DOCTYPE html>' +
 						'<head>' +
@@ -388,13 +390,14 @@ function hasMarkdownExtension(path){
 // http_request_handler: handles all the browser requests
 
 function http_request_handler(req, res, next){
-	if (flags.verbose){
+
+  if (flags.verbose){
     msg('request')
-  	 .write(dir+req.originalUrl)
+  	 .write(unescape(dir)+unescape(req.originalUrl))
   	 .reset().write('\n');
   }
 
-  var path = dir+req.originalUrl;
+  var path = unescape(dir)+unescape(req.originalUrl);
   var isDir = fs.statSync(path).isDirectory();
   var isMarkdown = false;
 
@@ -443,9 +446,11 @@ function http_request_handler(req, res, next){
 			'<head>' +
 			'<title>'+path+'</title>' +
 			'<meta charset="utf-8">' +
-			'<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>'+
+			// '<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>'+
+      '<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>'+//
 		  '<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>'+
-		  '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">' +
+		  '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">' +
+      '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">' +
 		  '<link rel="shortcut icon" type="image/x-icon" href="https://cdn0.iconfinder.com/data/icons/octicons/1024/markdown-128.png" />' +
 			'<style>'+customCSSforMarkdown+'</style>' +
 			'</head>' +
