@@ -80,7 +80,7 @@ Example code:
 
 Example link:
 
-[Skateboarding Dog!](Linked-Markdown-Example)
+[Skateboarding Dog!](Linked-Markdown-Example.md)
 
 
 ### Using With Auto-Save for SublimeText
