@@ -56,6 +56,7 @@ var r = flags.version(pkg.version)
   .option('-p, --port [type]', 'Serve on port [port]', '8080')
   .option('-s, --less [type]', 'Path to Less styles [less]', GitHubStyle)
   .option('-f, --file [type]', 'Open specific file in browser [file]')
+  .option('-x, --x', 'Don\'t open browser on run.')
   .option('-v, --verbose', 'verbose output')
   .parse(process.argv);
 
@@ -148,13 +149,13 @@ function serversActivated(){
 
   msg('start')
    .write('serving content from ')
-   .fg.rgb(255,255,255).write(path.resolve(flags.home)).reset()
+   .fg.white().write(path.resolve(flags.home)).reset()
    .write(' on port: ')
-   .fg.rgb(255,255,255).write(''+HTTP_PORT).reset()
+   .fg.white().write(''+HTTP_PORT).reset()
    .write('\n');
 
   msg('address')
-   .underline().fg.rgb(255,255,255)
+   .underline().fg.white()
    .write(serveURL).reset()
    .write('\n');
 
@@ -162,32 +163,34 @@ function serversActivated(){
 
   msg('less')
    .write('using style from ')
-   .fg.rgb(255,255,255).write(flags.less).reset()
+   .fg.white().write(flags.less).reset()
    .write('\n');
 
   msg('livereload')
     .write('communicating on port: ')
-    .fg.rgb(255,255,255).write(LIVE_RELOAD_PORT+'').reset()
+    .fg.white().write(LIVE_RELOAD_PORT+'').reset()
     .write('\n');
 
   if (process.pid) {
     msg('process')
       .write('your pid is: ')
-      .fg.rgb(255,255,255).write(process.pid+'').reset()
+      .fg.white().write(process.pid+'').reset()
       .write('\n');
 
     msg('info')
       .write('to stop this server, press: ')
-      .fg.rgb(255,255,255).write('[Ctrl + C]').reset()
+      .fg.white().write('[Ctrl + C]').reset()
       .write(', or type: ')
-      .fg.rgb(255,255,255).write('"kill '+process.pid+'"').reset()
+      .fg.white().write('"kill '+process.pid+'"').reset()
       .write('\n');
   }
 
   if (flags.file){
     open(serveURL+'/'+flags.file);
   } else {
-    open(serveURL);
+    if (!flags.x){
+      open(serveURL);
+    }
   }
 }
 
@@ -203,14 +206,31 @@ function serversActivated(){
 
 function msg(type){
 	return cursor
-		.bg.rgb(64, 128, 0)
-		.fg.rgb(0,0,0)
+    .bg.green()
+		.fg.black()
 		.write(' Markserv ')
 		.reset()
-		.fg.rgb(200,200,200)
+		.fg.white()
 		.write(' '+type+': ')
 		.reset()
 		;
+}
+
+
+function boohoo(type){
+  return cursor
+    .bg.red()
+    .fg.black()
+    .write(' Markserv ')
+    .reset()
+    .write(' ')
+    .fg.black()
+    .bg.red()
+    .write(' '+type+': ')
+    .reset()
+    .fg.red()
+    .write(' ')
+    ;
 }
 
 
@@ -303,7 +323,7 @@ function buildHTMLFromMarkDown(markdownPath){
 
 				// Maybe use something like handlbars here?
 
-        console.log(GitHubStyle);
+        // console.log(GitHubStyle);
 
 				if(flags.less === GitHubStyle){
 					html = '<!DOCTYPE html>' +
@@ -398,27 +418,36 @@ function http_request_handler(req, res, next){
   }
 
   var path = unescape(dir)+unescape(req.originalUrl);
-  var isDir = fs.statSync(path).isDirectory();
-  var isMarkdown = false;
 
-  if(!isDir){
-    isMarkdown = hasMarkdownExtension(path);
+  try{
+    var stat = fs.statSync(path);
+    var isDir = stat.isDirectory();
+    var isMarkdown = false;
+    if (!isDir) {
+      isMarkdown = hasMarkdownExtension(path);
+    }
+  }catch(e){
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    boohoo('404').write(path.slice(2)).reset().write('\n');
+    res.write("404 :'(");
+    res.end();
+    return;
   }
-
-
   // Markdown: Browser is requesting a Markdown file...
 
   if (isMarkdown) {
 
-  	if (flags.verbose){
-      msg('markdown-to-html').write(path).reset().write('\n');
-    }
+  	// if (flags.verbose){
+    msg('markdown').write(path.slice(2)).reset().write('\n');
+    // }
   	compileAndSend(path, res);
 
 
   // Index: Browser is requesting a Directory Index...
 
   } else if (isDir) {
+
+    msg('dir').write(path.slice(2)).reset().write('\n');
 
   	var urls = fs.readdirSync(path);
   	var list = '<ul>\n';
@@ -444,7 +473,7 @@ function http_request_handler(req, res, next){
 
   	var html = '<!DOCTYPE html>' +
 			'<head>' +
-			'<title>'+path+'</title>' +
+			'<title>'+(path.slice(2))+'</title>' +
 			'<meta charset="utf-8">' +
 			// '<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>'+
       '<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>'+//
@@ -456,7 +485,7 @@ function http_request_handler(req, res, next){
 			'</head>' +
 			'<body>'+
 				'<article class="markdown-body">'+
-					'<h1>Index of '+path+'</h1>'+
+					'<h1>Index of '+(path.slice(2))+'</h1>'+
 					list+
 					'<sup><hr> Served by <a href="https://www.npmjs.com/package/markserv">MarkServ</a> | '+process.pid+'</sup>'+
 			 	'</article>'+
@@ -477,9 +506,9 @@ function http_request_handler(req, res, next){
   // Other: Browser is requesting a default Mime typed file... (mime type handled by 'send')
 
   } else {
-  	if (flags.verbose){
-      msg('serve-file').write(path).reset().write('\n');
-    }
+  	// if (flags.verbose){
+      msg('file').write(path.slice(2)).reset().write('\n');
+    // }
 
   	send(req, path, {root:dir}).pipe(res);
   }
