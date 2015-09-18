@@ -143,9 +143,7 @@ function startLiveReloadServer(){
 }
 
 function serversActivated(){
-  var address = HTTP_SERVER.address(); //|| {address:''};
-  var urlSafeAddress = address.address === "::" ? "localhost" : address.address;
-  var serveURL = 'http://'+urlSafeAddress+':'+HTTP_PORT;
+  var serveURL = 'http://'+"0.0.0.0"+':'+HTTP_PORT;
 
   msg('start')
    .write('serving content from ')
