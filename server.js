@@ -143,7 +143,9 @@ function startLiveReloadServer(){
 }
 
 function serversActivated(){
-  var serveURL = 'http://'+"0.0.0.0"+':'+HTTP_PORT;
+  var address = HTTP_SERVER.address(); //|| {address:''};
+  var urlSafeAddress = address.address === "::" ? "0.0.0.0" : address.address;
+  var serveURL = 'http://'+urlSafeAddress+':'+HTTP_PORT;
 
   msg('start')
    .write('serving content from ')
@@ -334,7 +336,7 @@ function buildHTMLFromMarkDown(markdownPath){
 						'<style>'+css+'</style>' +
 						'</head>' +
 						'<body><article class="markdown-body">'+body+'</article></body>'+
-						'<script src="http://localhost:35729/livereload.js?snipver=1"></script>'+
+						'<script src="http://0.0.0.0:35729/livereload.js?snipver=1"></script>'+
             '<script>hljs.initHighlightingOnLoad();</script>';
 				} else {
 					html = '<!DOCTYPE html>' +
@@ -348,7 +350,7 @@ function buildHTMLFromMarkDown(markdownPath){
 								body +
 						 	'</article>'+
 						 '</body>'+
-						'<script src="http://localhost:35729/livereload.js?snipver=1"></script>';
+						'<script src="http://0.0.0.0:35729/livereload.js?snipver=1"></script>';
 				}
 
 				resolve(html);
@@ -488,7 +490,7 @@ function http_request_handler(req, res, next){
 					'<sup><hr> Served by <a href="https://www.npmjs.com/package/markserv">MarkServ</a> | '+process.pid+'</sup>'+
 			 	'</article>'+
 			 '</body>'+
-			'<script src="http://localhost:35729/livereload.js?snipver=1"></script>';
+			'<script src="http://0.0.0.0:35729/livereload.js?snipver=1"></script>';
 
   	// Log if verbose
 
